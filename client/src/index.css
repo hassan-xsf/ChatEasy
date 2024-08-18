@@ -1,0 +1,27 @@
+@tailwind components;
+@tailwind utilities;
+@tailwind base;
+
+@layer utilities {
+    /* Custom scrollbar for webkit-based browsers */
+    .scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .scrollbar::-webkit-scrollbar-track {
+      background: #ffff; /* Track color */
+    }
+  
+    .scrollbar::-webkit-scrollbar-thumb {
+      background: #FF3951; /* Scrollbar color */
+      border-radius: 4px;
+    }
+  
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #ffff; /* Scrollbar color on hover */
+    }
+  }
+
+.ring {
+    @apply ring-2 ring-gray-200 ring-inset
+}
