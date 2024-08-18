@@ -1,7 +1,15 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt"
+import mongoose , {Document,Model} from "mongoose";
+import bcrypt from 'bcrypt'
 
-const userSchema = new mongoose.Schema({
+interface IUser extends Document{
+    username: string,
+    email: string,
+    password: string,
+    friends: mongoose.Types.ObjectId[]
+}
+
+
+const userSchema = new mongoose.Schema<IUser>({
     username: {
         type: String,
         required: true,
@@ -17,13 +25,22 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-    }
-} , {timestamps: true})
+    },
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
 
-userSchema.pre("save" , async function() {
-    if(!this.isModified("password")) return;
-    await bcrypt.hash(this.password,10)
-})
+    }],
+}, { timestamps: true })
+
+userSchema.pre<IUser>("save", async function (next) {
+
+    if (!this.isModified("password")) return next();
+
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+  });
+  
 
 
-export const User = mongoose.model("User" , userSchema)
+export const User : Model<IUser> = mongoose.model<IUser>("User", userSchema)
