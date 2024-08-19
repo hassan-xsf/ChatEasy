@@ -25,6 +25,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
         enabled: !authStatus,
     })
     useEffect(() => {
+        console.log("YES")
         if (!authStatus) {
             dispatch(logout())
         }
@@ -41,7 +42,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
             dispatch(logout())
             navigate('/')
         }
-    }, [data, error]);
+    }, [error]);
 
     return (
         isLoading ?

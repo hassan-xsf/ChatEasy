@@ -2,8 +2,8 @@ import axios from "axios";
 
 
 
-const viewFriends = async() => {
-    return await axios.get('/api/v1/users/friends')
+const viewFriends = () => {
+    return axios.get('/api/v1/users/friends')
 }
 
 const toggleFriend = async(friendId : string) => {
@@ -13,5 +13,4 @@ const toggleFriend = async(friendId : string) => {
 export {
     viewFriends,
     toggleFriend
-
 }
