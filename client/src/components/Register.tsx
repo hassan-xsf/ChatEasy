@@ -4,10 +4,9 @@ import Logo from './Logo'
 import { loginUser, registerUser } from '../api/auth'
 import { useMutation } from '@tanstack/react-query'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 import { login } from '../store/authSlice'
-import { Link } from 'react-router-dom';
+import { Link  , useNavigate} from 'react-router-dom';
 
 
 function Register() {
@@ -15,6 +14,7 @@ function Register() {
     const { control, register, handleSubmit, formState: { errors } } = useForm()
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
 
     const loginMutation = useMutation({
         mutationFn: (data: { email: string; password: string }) => loginUser(data),
@@ -33,7 +33,7 @@ function Register() {
     });
 
     const registerMutation = useMutation({
-        mutationFn: (data: { email: string; username: string; password: string , gender: string }) => registerUser(data),
+        mutationFn: (data: { email: string; username: string; password: string, gender: string }) => registerUser(data),
         onSuccess: (res) => {
             console.log('Registration successful:');
             loginMutation.mutate({

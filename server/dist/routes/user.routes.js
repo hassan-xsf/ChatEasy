@@ -15,10 +15,15 @@ router.route('/logout')
     .post(auth_middleware_1.default, user_controller_1.logoutUser);
 router.route('/account')
     .get(auth_middleware_1.default, user_controller_1.getCurrentUser);
-router.route('/friends/add/:friendId')
-    .post(auth_middleware_1.default, user_controller_1.addFriend);
-router.route('/friends/remove/:friendId')
-    .patch(auth_middleware_1.default, user_controller_1.removeFriend);
+router.route('/friends/toggle/:friendId')
+    .post(auth_middleware_1.default, user_controller_1.toggleFriend);
+// router.route('/friends/remove/:friendId')
+//     .patch(
+//         verifyJWT,
+//         removeFriend
+//     )
 router.route('/friends')
     .get(auth_middleware_1.default, user_controller_1.viewFriends);
+router.route('/search/:username')
+    .get(auth_middleware_1.default, user_controller_1.searchUsers);
 exports.default = router;

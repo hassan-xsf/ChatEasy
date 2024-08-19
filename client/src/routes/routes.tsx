@@ -70,10 +70,18 @@ const router = createBrowserRouter([
                         ),
                     },
                     {
-                        path: '/chat/search/:searchTest',
+                        path: '/chat/friends/',
                         element: (
                             <Suspense fallback={<Fallback />}>
-                                <SearchMain />
+                                <SearchMain type = "friends"/>
+                            </Suspense>
+                        ),
+                    },
+                    {
+                        path: '/chat/search/:search',
+                        element: (
+                            <Suspense fallback={<Fallback />}>
+                                <SearchMain type = "search"/>
                             </Suspense>
                         ),
                     },

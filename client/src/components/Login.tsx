@@ -12,10 +12,11 @@ import { login } from '../store/authSlice'
 
 function Login() {
 
-
+    
     const { register, handleSubmit, formState: { errors } } = useForm()
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
 
     const loginMutation = useMutation({
         mutationFn: (data: { email: string; password: string }) => loginUser(data),
@@ -41,7 +42,7 @@ function Login() {
     return <>
         <div className="bg-white w-full h-[calc(75vh-7vh)] relative pt-0.5">
 
-            <form onSubmit = {handleSubmit(handleLogin)} className="flex flex-col justify-center gap-2">
+            <form onSubmit={handleSubmit(handleLogin)} className="flex flex-col justify-center gap-2">
                 <Logo size="medium" />
                 <span className="text-xs mb-4 text-center">Login to your account.</span>
 
@@ -59,7 +60,7 @@ function Login() {
                     {errors.email && <span className="text-xs text-red-500 w-1/3 mx-auto">{errors.email.message as string}</span>}
                     <InputBox label="Password" type="password" name="password" required={true} register={register} />
                 </div>
-                <Link to = "/register" className="text-xs mb-4 w-1/3 mx-auto">Don't have an account?</Link>
+                <Link to="/register" className="text-xs mb-4 w-1/3 mx-auto">Don't have an account?</Link>
                 <button className="text-md w-[10%] mx-auto rounded-3xl mb-4 p-2 text-white font-semibold bg-primary">Sign In</button>
             </form>
 

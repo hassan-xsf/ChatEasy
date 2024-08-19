@@ -2,7 +2,7 @@ import Logo from './Logo'
 
 function DefaultMain() {
   return <>
-    <div className="bg-white w-[80%] h-[calc(75vh-8vh)] relative pt-0.5 mx-autor">
+    <div className="bg-white w-[80%] h-[calc(75vh-7vh)] relative">
       <div className="flex flex-col items-center justify-center h-96">
         <Logo size="medium" />
         <span>Click on a chat to view user messages.</span>

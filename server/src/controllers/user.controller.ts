@@ -15,15 +15,15 @@ const generateToken = async (userId: string): Promise<string | null> => {
 };
 
 const registerUser = asyncHandler(async (req: CustomRequest, res: Response) => {
-    const { username, email, password , gender } = req.body;
-    
+    const { username, email, password, gender } = req.body;
+
     if ([username, email, password].some(field => typeof field !== "string" || field.trim() === "")) {
         return res.status(400).json(
             new ApiResponse(400, [], "All fields are compulsory!")
         );
     }
 
-    const existedUser = await User.findOne({ $or: [{ username: username.toLowerCase() }, { email }] }) as IUser | null;
+    const existedUser = await User.findOne({ $or: [{ username: username }, { email }] }) as IUser | null;
     if (existedUser) {
         return res.status(400).json(
             new ApiResponse(400, [], "A user with the provided email or username already exists")
@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req: CustomRequest, res: Response) => {
     }
 
     const user = await User.create({
-        username: username.toLowerCase(),
+        username,
         email,
         password,
         gender
@@ -125,7 +125,7 @@ const logoutUser = asyncHandler(async (req: CustomRequest, res: Response) => {
         .json(new ApiResponse(200, {}, "User has been logged out"));
 });
 
-const addFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
+const toggleFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
     const { friendId } = req.params;
 
     const friendObjectId = new mongoose.Types.ObjectId(friendId);
@@ -136,46 +136,86 @@ const addFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
         );
     }
     const user = await User.findById(req.user?._id).select("-password")
-    if (user?.friends?.includes(friendObjectId)) {
-        return res.status(400).json(
-            new ApiResponse(400, {}, "User is already friended with the person.")
-        );
-    }
+    const isFriend = user?.friends?.includes(friendObjectId);
 
-    const friend = await User.findByIdAndUpdate(req.user?._id, {
-        $addToSet: {
-            friends: friendObjectId,
-        }
-    })
+    ///yoinked from gpt :3
+
+    await User.findByIdAndUpdate(req.user?._id, {
+        [isFriend ? '$pull' : '$addToSet']: { friends: friendObjectId },
+    });
+
+    await User.findByIdAndUpdate(friendObjectId, {
+        [isFriend ? '$pull' : '$addToSet']: { friends: req.user?._id },
+    });
+
     return res.status(200).json(
-        new ApiResponse(200, { friend }, "Friend has been succesfully added")
+        new ApiResponse(200, { isFriend }, `Friend has been succesfully ${isFriend ? "removed" : "added"}`)
     );
 })
 
-const removeFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
-    const { friendId } = req.params;
+// const removeFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
+//     const { friendId } = req.params;
 
-    const friendObjectId = new mongoose.Types.ObjectId(friendId);
+//     const friendObjectId = new mongoose.Types.ObjectId(friendId);
 
-    if (!friendId) {
-        return res.status(404).json(
-            new ApiResponse(404, [], "Friend ID not found!")
-        );
-    }
-    const user = await User.findById(req.user?._id).select("-password")
-    if (!user?.friends?.includes(friendObjectId)) {
-        return res.status(400).json(
-            new ApiResponse(400, {}, "You are not friend with that person")
-        );
-    }
+//     if (!friendId) {
+//         return res.status(404).json(
+//             new ApiResponse(404, [], "Friend ID not found!")
+//         );
+//     }
+//     const user = await User.findById(req.user?._id).select("-password")
+//     if (!user?.friends?.includes(friendObjectId)) {
+//         return res.status(400).json(
+//             new ApiResponse(400, {}, "You are not friend with that person")
+//         );
+//     }
 
-    const friend = await User.findByIdAndUpdate(req.user?._id, {
-        $pull: {
-            friends: friendObjectId,
+
+//     return res.status(200).json(
+//         new ApiResponse(200, { friend }, "Friend has been succesfully removed")
+//     );
+// })
+
+const searchUsers = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const { username } = req.params;
+
+    const userId = new mongoose.Types.ObjectId(req.user?._id);
+
+    const users = await User.aggregate([
+        {
+            $match: {
+                username: { $regex: username, $options: 'i' }
+            }
+        },
+        {
+            $addFields: {
+                isFriend: {
+                    $cond: {
+                        if: { $in: [userId, '$friends'] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                username: 1,
+                email: 1,
+                friends: 1,
+                isFriend: 1
+            }
+        },
+        {
+            $limit: 10
         }
-    })
+    ]);
+    const totalCount = await User.countDocuments({
+        username: new RegExp(username, 'i')
+    });
+
     return res.status(200).json(
-        new ApiResponse(200, { friend }, "Friend has been succesfully removed")
+        new ApiResponse(200, { users, count: totalCount }, "Friend data has been succesfully fetched")
     );
 })
 
@@ -205,4 +245,4 @@ const getCurrentUser = asyncHandler(async (req: CustomRequest, res: Response) =>
     );
 });
 
-export { registerUser, loginUser, logoutUser, getCurrentUser, viewFriends, addFriend, removeFriend };
+export { registerUser, loginUser, logoutUser, getCurrentUser, viewFriends, toggleFriend, searchUsers };

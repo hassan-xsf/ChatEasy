@@ -2,13 +2,13 @@ import jwt from "jsonwebtoken"
 import { Response, NextFunction } from "express"
 import ApiResponse from "../utilities/ApiResponse"
 import { CustomRequest } from '../types/request';
-
+import { User } from "../models/user.model";
 
 interface JwtPayload {
     _id: string;
 }
 
-const verifyJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
+const verifyJWT = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
         const token = req?.cookies.accessToken;
         if (!token) {
@@ -22,8 +22,15 @@ const verifyJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
                 new ApiResponse(400, [], "No authentication token or invalid token found!")
             )
         }
-        req.user = {
-            _id: decodedToken._id
+
+        const user = await User.findById(decodedToken?._id).select("-password")
+        if (!user) {
+            new ApiResponse(400, [], "Invalid token found!")
+        }
+        else {
+            req.user = {
+                _id: decodedToken._id
+            }
         }
 
         next()

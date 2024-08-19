@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logoutUser , getCurrentUser , addFriend , removeFriend , viewFriends } from "../controllers/user.controller";
+import { registerUser, loginUser, logoutUser , getCurrentUser , toggleFriend , viewFriends , searchUsers } from "../controllers/user.controller";
 import verifyJWT from '../middlewares/auth.middleware'
 
 const router = Router();
@@ -27,17 +27,17 @@ router.route('/account')
     )
 
 
-router.route('/friends/add/:friendId')
+router.route('/friends/toggle/:friendId')
     .post(
         verifyJWT,
-        addFriend
+        toggleFriend
     )
 
-router.route('/friends/remove/:friendId')
-    .patch(
-        verifyJWT,
-        removeFriend
-    )
+// router.route('/friends/remove/:friendId')
+//     .patch(
+//         verifyJWT,
+//         removeFriend
+//     )
 
 
 router.route('/friends')
@@ -45,7 +45,12 @@ router.route('/friends')
         verifyJWT,
         viewFriends
     )
-
+    
+router.route('/search/:username')
+    .get(
+        verifyJWT,
+        searchUsers
+    )
 
 
 export default router;

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { useTSSelector } from '../hooks/useTSSelector'
 import { login, logout } from '../store/authSlice';
 import Logo from './Logo';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthLayoutProps {
     children: React.ReactNode;
@@ -15,6 +16,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
 
     const authStatus = useTSSelector(state => state.auth.authStatus)
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const { isLoading, error, data } = useQuery({
         queryKey: ['getUser'],
@@ -27,8 +29,8 @@ function AuthLayout({ children }: AuthLayoutProps) {
             dispatch(logout())
         }
         if (data) {
-            console.log(data.data.user)
             dispatch(login(data.data.user))
+            navigate("/chat/")
         }
         if (error) {
             if (error instanceof AxiosError && error.message) {
@@ -37,6 +39,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
                 console.log("Error: " + error);
             }
             dispatch(logout())
+            navigate('/')
         }
     }, [data, error]);
 
@@ -51,7 +54,10 @@ function AuthLayout({ children }: AuthLayoutProps) {
                 </div>
             </>
             :
-            <> {children}</>
+            <> 
+                {children}
+    
+            </>
     )
 }
 
