@@ -1,11 +1,16 @@
-import mongoose , {Document,Model} from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken"
 
-interface IUser extends Document{
+export interface IUser extends Document {
+    _id: string,
     username: string,
     email: string,
     password: string,
-    friends: mongoose.Types.ObjectId[]
+    friends?: mongoose.Types.ObjectId[]
+
+    generateAccessToken: () => string;
+    isPasswordCorrect: (password: string) => string
 }
 
 
@@ -33,14 +38,29 @@ const userSchema = new mongoose.Schema<IUser>({
     }],
 }, { timestamps: true })
 
+
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign({
+        _id: this._id
+    },
+        process.env.ACCESS_TOKEN_SECRET as string,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        })
+}
+userSchema.methods.isPasswordCorrect = async function (password: string) {
+    return await bcrypt.compare(password, this.password)
+}
+
 userSchema.pre<IUser>("save", async function (next) {
 
     if (!this.isModified("password")) return next();
-
     this.password = await bcrypt.hash(this.password, 10);
     next();
-  });
-  
+});
 
 
-export const User : Model<IUser> = mongoose.model<IUser>("User", userSchema)
+
+
+
+export const User: Model<IUser> = mongoose.model<IUser>("User", userSchema)

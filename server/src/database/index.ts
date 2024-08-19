@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import 'dotenv/config'
-import ApiResponse from '../utilities/responseHandler'
+import ApiResponse from '../utilities/ApiResponse'
 
 
 const connectDB = async() => {
