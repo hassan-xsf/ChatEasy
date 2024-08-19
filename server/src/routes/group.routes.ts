@@ -7,6 +7,13 @@ const router = Router();
 
 router.use(verifyJWT)
 
+
+router.route('/my')
+    .post(
+        createGroup,
+    )
+
+
 router.route('/create')
     .post(
         createGroup,

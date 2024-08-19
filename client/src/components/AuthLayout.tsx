@@ -42,7 +42,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
             dispatch(logout())
             navigate('/')
         }
-    }, [error]);
+    }, [data, error]);
 
     return (
         isLoading ?

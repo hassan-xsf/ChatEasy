@@ -8,6 +8,8 @@ const group_controller_1 = require("../controllers/group.controller");
 const auth_middleware_1 = __importDefault(require("../middlewares/auth.middleware"));
 const router = (0, express_1.Router)();
 router.use(auth_middleware_1.default);
+router.route('/my')
+    .post(group_controller_1.createGroup);
 router.route('/create')
     .post(group_controller_1.createGroup);
 router.route('/view/:groupId')

@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 
 function App() {
 
-
+  console.log("Rendere")
   return (
     
     <div className="font-roboto bg-gradient-to-r from-rose-400 to-red-500 min-h-screen flex items-center">

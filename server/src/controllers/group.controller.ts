@@ -12,6 +12,16 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
         );
     }
 
+    const existingGroup = await Group.findOne({
+        members: { $all: members }
+      });
+    
+      if (existingGroup) {
+        return res.status(400).json(
+          new ApiResponse(400, [], "A group with the same members already exists")
+        );
+      }
+
     const owner = req.user?._id;
 
     if (!owner) {
@@ -30,9 +40,28 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
         new ApiResponse(201, group, "Group has been created successfully")
     );
 });
+
+export const viewUserGroups = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const group = await Group.find({
+        members: { $in: [req.user?._id] }
+    }).populate([
+        {
+            path: 'members',
+            select: 'username email',
+        },
+        {
+            path: 'owner',
+            select: 'username email'
+        }
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, group, "Group details fetched successfully")
+    );
+});
+
 export const viewGroup = asyncHandler(async (req: CustomRequest, res: Response) => {
     const { groupId } = req.params;
-    console.log(groupId)
     if (!groupId) {
         return res.status(400).json(
             new ApiResponse(400, [], "Invalid group ID")

@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 
 
 function Navbar() {
-  console.log("navbar rendered")
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

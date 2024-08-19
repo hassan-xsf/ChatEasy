@@ -175,11 +175,37 @@ const searchUsers = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(voi
 exports.searchUsers = searchUsers;
 const viewFriends = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const userFriends = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id).select("friends username").populate({
-        path: 'friends',
-        select: 'username email'
-    });
-    return res.status(200).json(new ApiResponse_1.default(200, { userFriends }, "Friend data has been succesfully fetched"));
+    const userId = new mongoose_1.default.Types.ObjectId((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+    const user = yield user_model_1.User.findById(userId).select('friends');
+    if (!user) {
+        return res.status(404).json(new ApiResponse_1.default(404, [], "User not found"));
+    }
+    const friends = yield user_model_1.User.aggregate([
+        {
+            $match: {
+                _id: { $in: user.friends }
+            }
+        },
+        {
+            $addFields: {
+                isFriend: {
+                    $cond: {
+                        if: { $in: [userId, '$friends'] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                username: 1,
+                email: 1,
+                isFriend: 1
+            }
+        }
+    ]);
+    return res.status(200).json(new ApiResponse_1.default(200, { friends }, "Friend data has been successfully fetched"));
 }));
 exports.viewFriends = viewFriends;
 // Get Current User

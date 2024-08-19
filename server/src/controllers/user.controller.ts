@@ -218,17 +218,47 @@ const searchUsers = asyncHandler(async (req: CustomRequest, res: Response) => {
         new ApiResponse(200, { users, count: totalCount }, "Friend data has been succesfully fetched")
     );
 })
-
 const viewFriends = asyncHandler(async (req: CustomRequest, res: Response) => {
-    const userFriends = await User.findById(req.user?._id).select("friends username").populate({
-        path: 'friends',
-        select: 'username email'
-    })
-    return res.status(200).json(
-        new ApiResponse(200, { userFriends }, "Friend data has been succesfully fetched")
-    );
-})
+    const userId = new mongoose.Types.ObjectId(req.user?._id);
 
+    const user = await User.findById(userId).select('friends');
+
+    if (!user) {
+        return res.status(404).json(
+            new ApiResponse(404, [], "User not found")
+        );
+    }
+
+    const friends = await User.aggregate([
+        {
+            $match: {
+                _id: { $in: user.friends }
+            }
+        },
+        {
+            $addFields: {
+                isFriend: {
+                    $cond: {
+                        if: { $in: [userId, '$friends'] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                username: 1,
+                email: 1,
+                isFriend: 1
+            }
+        }
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, { friends }, "Friend data has been successfully fetched")
+    );
+});
 
 
 

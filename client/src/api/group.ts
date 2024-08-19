@@ -1,8 +1,8 @@
 import axios from "axios";
 
 
-const createGroup = ({ name, members }: { name: string , members: Array<string> }) => {
-    return axios.post("/api/v1/group/create", { name , members }, {
+const createGroup = async({ name, members }: { name: string , members: Array<string> }) => {
+    return await axios.post("/api/v1/group/create", { name , members }, {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
