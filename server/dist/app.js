@@ -14,5 +14,9 @@ app.use(express_1.default.urlencoded({ extended: true }));
 /* ROUTES */
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 app.use('/api/v1/users', user_routes_1.default);
+const group_routes_1 = __importDefault(require("./routes/group.routes"));
+app.use('/api/v1/group', group_routes_1.default);
+const message_routes_1 = __importDefault(require("./routes/message.routes"));
+app.use('/api/v1/message', message_routes_1.default);
 const server = (0, http_1.createServer)(app);
 exports.server = server;

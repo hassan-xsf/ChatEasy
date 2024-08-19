@@ -14,6 +14,17 @@ import userRouter from './routes/user.routes'
 
 app.use('/api/v1/users' , userRouter)
 
+
+import groupRouter from './routes/group.routes'
+
+app.use('/api/v1/group' , groupRouter)
+
+
+import messageRouter from './routes/message.routes'
+
+app.use('/api/v1/message' , messageRouter)
+
+
 const server = createServer(app)
 
 export {

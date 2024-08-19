@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logoutUser , getCurrentUser } from "../controllers/user.controller";
+import { registerUser, loginUser, logoutUser , getCurrentUser , addFriend , removeFriend , viewFriends } from "../controllers/user.controller";
 import verifyJWT from '../middlewares/auth.middleware'
 
 const router = Router();
@@ -25,5 +25,27 @@ router.route('/account')
         verifyJWT,
         getCurrentUser
     )
+
+
+router.route('/friends/add/:friendId')
+    .post(
+        verifyJWT,
+        addFriend
+    )
+
+router.route('/friends/remove/:friendId')
+    .patch(
+        verifyJWT,
+        removeFriend
+    )
+
+
+router.route('/friends')
+    .get(
+        verifyJWT,
+        viewFriends
+    )
+
+
 
 export default router;

@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCurrentUser = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
+exports.removeFriend = exports.addFriend = exports.viewFriends = exports.getCurrentUser = exports.logoutUser = exports.loginUser = exports.registerUser = void 0;
 const user_model_1 = require("../models/user.model");
 const ApiResponse_1 = __importDefault(require("../utilities/ApiResponse"));
 const asyncHandler_1 = require("../utilities/asyncHandler");
+const mongoose_1 = __importDefault(require("mongoose"));
 const generateToken = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(userId);
     if (user) {
@@ -24,12 +25,11 @@ const generateToken = (userId) => __awaiter(void 0, void 0, void 0, function* ()
     return null;
 });
 const registerUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password } = req.body;
-    // Ensure fields are strings and non-empty
+    const { username, email, password, gender } = req.body;
     if ([username, email, password].some(field => typeof field !== "string" || field.trim() === "")) {
         return res.status(400).json(new ApiResponse_1.default(400, [], "All fields are compulsory!"));
     }
-    const existedUser = yield user_model_1.User.findOne({ $or: [{ username }, { email }] });
+    const existedUser = yield user_model_1.User.findOne({ $or: [{ username: username.toLowerCase() }, { email }] });
     if (existedUser) {
         return res.status(400).json(new ApiResponse_1.default(400, [], "A user with the provided email or username already exists"));
     }
@@ -37,12 +37,13 @@ const registerUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
         username: username.toLowerCase(),
         email,
         password,
+        gender
     });
     const createdUser = yield user_model_1.User.findById(user._id).select("-password");
     if (!createdUser) {
         return res.status(500).json(new ApiResponse_1.default(500, [], "There was a problem creating the user."));
     }
-    return res.status(201).json(new ApiResponse_1.default(201, createdUser, "User has been created successfully."));
+    return res.status(201).json(new ApiResponse_1.default(201, { createdUser, config: password }, "User has been created successfully."));
 }));
 exports.registerUser = registerUser;
 // Login user
@@ -60,10 +61,10 @@ const loginUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 
         return res.status(401).json(new ApiResponse_1.default(401, [], "Incorrect password!"));
     }
     const accessToken = yield generateToken(user._id);
-    const loggedInUser = yield user_model_1.User.findById(user._id).select("-password -refreshToken");
+    const loggedInUser = yield user_model_1.User.findById(user._id).select("-password");
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' // Use secure cookies only in production
+        secure: process.env.NODE_ENV === 'production'
     };
     return res.status(200)
         .cookie("accessToken", accessToken !== null && accessToken !== void 0 ? accessToken : '', options)
@@ -89,13 +90,60 @@ const logoutUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void
     }
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' // Use secure cookies only in production
+        secure: process.env.NODE_ENV === 'production'
     };
     return res.status(200)
         .clearCookie("accessToken", options)
         .json(new ApiResponse_1.default(200, {}, "User has been logged out"));
 }));
 exports.logoutUser = logoutUser;
+const addFriend = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
+    const { friendId } = req.params;
+    const friendObjectId = new mongoose_1.default.Types.ObjectId(friendId);
+    if (!friendId) {
+        return res.status(404).json(new ApiResponse_1.default(404, [], "Friend ID not found!"));
+    }
+    const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id).select("-password");
+    if ((_b = user === null || user === void 0 ? void 0 : user.friends) === null || _b === void 0 ? void 0 : _b.includes(friendObjectId)) {
+        return res.status(400).json(new ApiResponse_1.default(400, {}, "User is already friended with the person."));
+    }
+    const friend = yield user_model_1.User.findByIdAndUpdate((_c = req.user) === null || _c === void 0 ? void 0 : _c._id, {
+        $addToSet: {
+            friends: friendObjectId,
+        }
+    });
+    return res.status(200).json(new ApiResponse_1.default(200, { friend }, "Friend has been succesfully added"));
+}));
+exports.addFriend = addFriend;
+const removeFriend = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
+    const { friendId } = req.params;
+    const friendObjectId = new mongoose_1.default.Types.ObjectId(friendId);
+    if (!friendId) {
+        return res.status(404).json(new ApiResponse_1.default(404, [], "Friend ID not found!"));
+    }
+    const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id).select("-password");
+    if (!((_b = user === null || user === void 0 ? void 0 : user.friends) === null || _b === void 0 ? void 0 : _b.includes(friendObjectId))) {
+        return res.status(400).json(new ApiResponse_1.default(400, {}, "You are not friend with that person"));
+    }
+    const friend = yield user_model_1.User.findByIdAndUpdate((_c = req.user) === null || _c === void 0 ? void 0 : _c._id, {
+        $pull: {
+            friends: friendObjectId,
+        }
+    });
+    return res.status(200).json(new ApiResponse_1.default(200, { friend }, "Friend has been succesfully removed"));
+}));
+exports.removeFriend = removeFriend;
+const viewFriends = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const userFriends = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id).select("friends username").populate({
+        path: 'friends',
+        select: 'username email'
+    });
+    return res.status(200).json(new ApiResponse_1.default(200, { userFriends }, "Friend data has been succesfully fetched"));
+}));
+exports.viewFriends = viewFriends;
 // Get Current User
 const getCurrentUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.user) {

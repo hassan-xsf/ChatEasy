@@ -29,6 +29,9 @@ const userSchema = new mongoose_1.default.Schema({
         required: true,
         unique: true
     },
+    gender: {
+        type: String,
+    },
     password: {
         type: String,
         required: true,
@@ -47,7 +50,10 @@ userSchema.methods.generateAccessToken = function () {
 };
 userSchema.methods.isPasswordCorrect = function (password) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.compare(password, this.password);
+        if (!this.password) {
+            throw new Error("Password is undefined");
+        }
+        return bcrypt_1.default.compare(password, this.password);
     });
 };
 userSchema.pre("save", function (next) {

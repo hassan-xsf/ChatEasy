@@ -7,10 +7,11 @@ export interface IUser extends Document {
     username: string,
     email: string,
     password: string,
+    gender: string,
     friends?: mongoose.Types.ObjectId[]
 
     generateAccessToken: () => string;
-    isPasswordCorrect: (password: string) => string
+    isPasswordCorrect: (password: string) => Promise<boolean>;
 }
 
 
@@ -26,6 +27,9 @@ const userSchema = new mongoose.Schema<IUser>({
         type: String,
         required: true,
         unique: true
+    },
+    gender: {
+        type: String,
     },
     password: {
         type: String,
@@ -48,9 +52,14 @@ userSchema.methods.generateAccessToken = function () {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         })
 }
-userSchema.methods.isPasswordCorrect = async function (password: string) {
-    return await bcrypt.compare(password, this.password)
-}
+
+userSchema.methods.isPasswordCorrect = async function (password: string): Promise<boolean> {
+    if (!this.password) {
+      throw new Error("Password is undefined");
+    }
+  
+    return bcrypt.compare(password, this.password);
+  };
 
 userSchema.pre<IUser>("save", async function (next) {
 
