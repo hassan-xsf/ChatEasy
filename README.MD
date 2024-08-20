@@ -9,6 +9,13 @@
 - **MongoDB**
 - **Typescript**
 
+# INTRODUCTION 🙌
+This project was just made to practice typescript, This is my first ever project using typescript after I literally crash learned it in 2 days.
+I created this project just to practice with sockets.io and typescript, Took it too far.
+Got bored, So couldn't focus on more but there's so much that can be implemented such as group chats, Online status etc.
+
+Although this is a very beginner friendly project, This project is just to furnish my skills. Incase of any issues/bugs, I am always available 😀
+
 ## Installation 🚀
 
 1. **Clone the repository:**
@@ -82,5 +89,3 @@
 
 6. **Create a Pull Request**: Go to the GitHub repository and click "New Pull Request."
 
-**NOTE**: This project was made a practice project just to experiment with Web Sockets, Took it too far.
-Got bored, So couldn't focus on more but there's so much that can be implemented.
