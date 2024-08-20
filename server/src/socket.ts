@@ -15,7 +15,9 @@ io.on('connection', (socket) => {
 
     socket.on('joinGroup', async({ groupId }: { groupId: string }) => {
         socket.join(groupId)
-        await viewChatHistory(groupId)
+        const data = await viewChatHistory(groupId)
+        socket.emit('loadChats' , data)
+
     })
 
     socket.on('sendMessage' , ({ groupId , msg , from}: { groupId: string  , msg: string , from: string}) => {

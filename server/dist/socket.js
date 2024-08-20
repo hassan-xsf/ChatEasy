@@ -22,7 +22,8 @@ const io = new socket_io_1.Server(app_1.server, {
 io.on('connection', (socket) => {
     socket.on('joinGroup', (_a) => __awaiter(void 0, [_a], void 0, function* ({ groupId }) {
         socket.join(groupId);
-        yield (0, message_controller_1.viewChatHistory)(groupId);
+        const data = yield (0, message_controller_1.viewChatHistory)(groupId);
+        socket.emit('loadChats', data);
     }));
     socket.on('sendMessage', ({ groupId, msg, from }) => {
         (0, message_controller_1.saveMessage)(groupId, from, msg);

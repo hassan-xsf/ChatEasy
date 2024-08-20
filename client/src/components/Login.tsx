@@ -1,5 +1,5 @@
 import { useForm, FieldValues } from 'react-hook-form'
-import InputBox from './InputBox'
+import InputBox from './Inputbox'
 import Logo from './Logo'
 import { Link } from 'react-router-dom';
 
@@ -22,7 +22,6 @@ function Login() {
     const loginMutation = useMutation({
         mutationFn: (data: { email: string; password: string }) => loginUser(data),
         onSuccess: (res) => {
-            console.log('Login successful:', res.data.data.user);
             toast.success(`Welcome back, ${res.data.data.user.username}` , {duration: 4000})
             dispatch(login(res.data.data.user))
             navigate("/chat")
