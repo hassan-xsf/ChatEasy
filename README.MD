@@ -1,4 +1,4 @@
-![Logo](https://res.cloudinary.com/drirwwvdw/image/upload/v1724184272/wvikctfyzustbdeipoao.png)
+![Logo](https://res.cloudinary.com/drirwwvdw/image/upload/v1724184580/r23gnucxtxsggrm2qbvq.png)
 
 # EasyChat v0.1 🎉
 #### Made using MERN stack.
