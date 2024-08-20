@@ -17,8 +17,8 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
       });
     
       if (existingGroup) {
-        return res.status(400).json(
-          new ApiResponse(400, [], "A group with the same members already exists")
+        return res.status(200).json(
+          new ApiResponse(200, existingGroup , "Group already existed!")
         );
       }
 
@@ -41,17 +41,17 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
     );
 });
 
-export const viewUserGroups = asyncHandler(async (req: CustomRequest, res: Response) => {
+export const viewGroups = asyncHandler(async (req: CustomRequest, res: Response) => {
     const group = await Group.find({
         members: { $in: [req.user?._id] }
     }).populate([
         {
             path: 'members',
-            select: 'username email',
+            select: 'username email avatar',
         },
         {
             path: 'owner',
-            select: 'username email'
+            select: 'username email avatar'
         }
     ]);
 

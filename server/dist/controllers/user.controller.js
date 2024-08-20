@@ -25,7 +25,7 @@ const generateToken = (userId) => __awaiter(void 0, void 0, void 0, function* ()
     return null;
 });
 const registerUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, password, gender } = req.body;
+    const { username, email, password, gender, fileURL } = req.body;
     if ([username, email, password].some(field => typeof field !== "string" || field.trim() === "")) {
         return res.status(400).json(new ApiResponse_1.default(400, [], "All fields are compulsory!"));
     }
@@ -37,7 +37,8 @@ const registerUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
         username,
         email,
         password,
-        gender
+        gender,
+        avatar: fileURL
     });
     const createdUser = yield user_model_1.User.findById(user._id).select("-password");
     if (!createdUser) {
@@ -116,24 +117,6 @@ const toggleFriend = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
     return res.status(200).json(new ApiResponse_1.default(200, { isFriend }, `Friend has been succesfully ${isFriend ? "removed" : "added"}`));
 }));
 exports.toggleFriend = toggleFriend;
-// const removeFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
-//     const { friendId } = req.params;
-//     const friendObjectId = new mongoose.Types.ObjectId(friendId);
-//     if (!friendId) {
-//         return res.status(404).json(
-//             new ApiResponse(404, [], "Friend ID not found!")
-//         );
-//     }
-//     const user = await User.findById(req.user?._id).select("-password")
-//     if (!user?.friends?.includes(friendObjectId)) {
-//         return res.status(400).json(
-//             new ApiResponse(400, {}, "You are not friend with that person")
-//         );
-//     }
-//     return res.status(200).json(
-//         new ApiResponse(200, { friend }, "Friend has been succesfully removed")
-//     );
-// })
 const searchUsers = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { username } = req.params;
@@ -160,7 +143,8 @@ const searchUsers = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(voi
                 username: 1,
                 email: 1,
                 friends: 1,
-                isFriend: 1
+                isFriend: 1,
+                avatar: 1
             }
         },
         {
@@ -201,7 +185,8 @@ const viewFriends = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(voi
             $project: {
                 username: 1,
                 email: 1,
-                isFriend: 1
+                isFriend: 1,
+                avatar: 1
             }
         }
     ]);

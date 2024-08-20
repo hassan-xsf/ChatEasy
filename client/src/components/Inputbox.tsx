@@ -1,4 +1,4 @@
-import { UseFormRegister } from 'react-hook-form'; 
+import { UseFormRegister } from 'react-hook-form';
 
 
 interface InputBoxProps {
@@ -9,28 +9,42 @@ interface InputBoxProps {
     register: UseFormRegister<any>
 }
 
-function InputBox({ label, type, name , required = false , register} : InputBoxProps) {
+function InputBox({ label, type, name, required = false, register }: InputBoxProps) {
     return (
         <>
             <div className="relative w-2/3 sm:w-1/3">
                 <input
                     type={type}
-                    {...register(name , 
+                    {...register(name,
                         {
                             required: required,
-                            pattern: 
-                            name === "email" ? 
-                            {
-                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: 'Invalid email address'
-                            } : name === "username" 
-                            ? {
-                                value: /^[a-zA-Z0-9]+$/,
-                                message: 'Username can only contain letters and numbers'
-                              }
-                            : undefined
+                            pattern:
+                                name === "email" ?
+                                    {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: 'Invalid email address'
+                                    } : name === "username"
+                                        ? {
+                                            value: /^[a-zA-Z0-9]+$/,
+                                            message: 'Username can only contain letters and numbers'
+                                        }
+                                        : undefined,
+
+                            validate: (value) => {
+                                if (type === "file") {
+                                    if (!value[0]) {
+                                        return "Please upload a file";
+                                    }
+                                    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+                                    if (!allowedTypes.includes(value[0].type)) {
+                                        return "Only image files (jpeg, png, gif) are allowed";
+                                    }
+                                }
+                                return true;
+                            },
                         }
                     )}
+                    accept={type === "file" ? "image/*" : ""}
                     id={name}
                     className="peer block w-full text-xs px-6 pt-4 pb-2 border rounded-md bg-transparent placeholder-transparent focus:outline-none focus:ring-0 focus:border-blue-500"
                     placeholder=" "

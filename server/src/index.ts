@@ -1,6 +1,6 @@
 import { server } from './app'
 import { connectDB } from './database/index'
-
+import { Server } from "socket.io";
 
 connectDB()
     .then(() => {

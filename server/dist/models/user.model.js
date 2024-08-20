@@ -36,6 +36,10 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: true
+    },
     friends: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: "User"

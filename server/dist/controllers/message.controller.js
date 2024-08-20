@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.viewMessages = exports.createMessage = void 0;
+exports.saveMessage = exports.viewChatHistory = exports.viewMessages = exports.createMessage = void 0;
 const group_model_1 = require("../models/group.model");
 const messsage_model_1 = require("../models/messsage.model");
 const ApiResponse_1 = __importDefault(require("../utilities/ApiResponse"));
@@ -56,3 +56,30 @@ const viewMessages = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(vo
     return res.status(201).json(new ApiResponse_1.default(201, messages, "Message has been sent succesfully!"));
 }));
 exports.viewMessages = viewMessages;
+const saveMessage = (groupId, from, msg) => __awaiter(void 0, void 0, void 0, function* () {
+    const group = yield group_model_1.Group.findById(groupId);
+    if (!group) {
+        return null;
+    }
+    const createdMessage = yield messsage_model_1.Message.create({
+        groupId,
+        msg,
+        from: from,
+    });
+    if (!createdMessage) {
+        return null;
+    }
+});
+exports.saveMessage = saveMessage;
+const viewChatHistory = (groupId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!groupId) {
+        return [];
+    }
+    const messages = yield messsage_model_1.Message.find({ groupId });
+    if (!messages) {
+        return [];
+    }
+    else
+        return messages;
+});
+exports.viewChatHistory = viewChatHistory;

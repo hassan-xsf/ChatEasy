@@ -15,7 +15,7 @@ const generateToken = async (userId: string): Promise<string | null> => {
 };
 
 const registerUser = asyncHandler(async (req: CustomRequest, res: Response) => {
-    const { username, email, password, gender } = req.body;
+    const { username, email, password, gender , fileURL } = req.body;
 
     if ([username, email, password].some(field => typeof field !== "string" || field.trim() === "")) {
         return res.status(400).json(
@@ -34,7 +34,8 @@ const registerUser = asyncHandler(async (req: CustomRequest, res: Response) => {
         username,
         email,
         password,
-        gender
+        gender,
+        avatar: fileURL
     });
 
     const createdUser = await User.findById(user._id).select("-password") as IUser | null;
@@ -153,28 +154,6 @@ const toggleFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
     );
 })
 
-// const removeFriend = asyncHandler(async (req: CustomRequest, res: Response) => {
-//     const { friendId } = req.params;
-
-//     const friendObjectId = new mongoose.Types.ObjectId(friendId);
-
-//     if (!friendId) {
-//         return res.status(404).json(
-//             new ApiResponse(404, [], "Friend ID not found!")
-//         );
-//     }
-//     const user = await User.findById(req.user?._id).select("-password")
-//     if (!user?.friends?.includes(friendObjectId)) {
-//         return res.status(400).json(
-//             new ApiResponse(400, {}, "You are not friend with that person")
-//         );
-//     }
-
-
-//     return res.status(200).json(
-//         new ApiResponse(200, { friend }, "Friend has been succesfully removed")
-//     );
-// })
 
 const searchUsers = asyncHandler(async (req: CustomRequest, res: Response) => {
     const { username } = req.params;
@@ -203,7 +182,8 @@ const searchUsers = asyncHandler(async (req: CustomRequest, res: Response) => {
                 username: 1,
                 email: 1,
                 friends: 1,
-                isFriend: 1
+                isFriend: 1,
+                avatar: 1
             }
         },
         {
@@ -218,6 +198,7 @@ const searchUsers = asyncHandler(async (req: CustomRequest, res: Response) => {
         new ApiResponse(200, { users, count: totalCount }, "Friend data has been succesfully fetched")
     );
 })
+
 const viewFriends = asyncHandler(async (req: CustomRequest, res: Response) => {
     const userId = new mongoose.Types.ObjectId(req.user?._id);
 
@@ -250,7 +231,8 @@ const viewFriends = asyncHandler(async (req: CustomRequest, res: Response) => {
             $project: {
                 username: 1,
                 email: 1,
-                isFriend: 1
+                isFriend: 1,
+                avatar: 1
             }
         }
     ]);

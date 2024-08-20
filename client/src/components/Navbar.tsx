@@ -8,20 +8,21 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { Link } from 'react-router-dom';
-
+import {toast} from 'sonner'
 
 function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const authStatus = useTSSelector(state => state.auth.authStatus)
+  const authData = useTSSelector(state => state.auth.authData)
   const auth = useTSSelector(state => state.auth.authData);
   const logoutMutation = useMutation({
     mutationFn: logoOut,
     onSuccess: () => {
-      console.log('Logged out!');
       dispatch(logout())
       navigate("/")
+      toast.info(`You have been logged out!` , {duration: 2000})
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -47,8 +48,8 @@ function Navbar() {
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-full bg-white">
             {
-              authStatus ?
-                <img className="object-fit size-full rounded-full" src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/corporate-user-icon.png" />
+              authStatus && authData?
+                <img className="object-fit size-full rounded-full" src = {authData.avatar as string} />
                 :
                 <svg className="object-fit size-full rounded-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 18L14 18M17 15V21M4 21C4 17.134 7.13401 14 11 14C11.695 14 12.3663 14.1013 13 14.2899M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

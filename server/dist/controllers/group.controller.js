@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.viewGroup = exports.viewUserGroups = exports.createGroup = void 0;
+exports.viewGroup = exports.viewGroups = exports.createGroup = void 0;
 const asyncHandler_1 = require("../utilities/asyncHandler");
 const group_model_1 = require("../models/group.model");
 const ApiResponse_1 = __importDefault(require("../utilities/ApiResponse"));
@@ -26,7 +26,7 @@ exports.createGroup = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(v
         members: { $all: members }
     });
     if (existingGroup) {
-        return res.status(400).json(new ApiResponse_1.default(400, [], "A group with the same members already exists"));
+        return res.status(200).json(new ApiResponse_1.default(200, existingGroup, "Group already existed!"));
     }
     const owner = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
     if (!owner) {
@@ -39,18 +39,18 @@ exports.createGroup = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(v
     });
     return res.status(201).json(new ApiResponse_1.default(201, group, "Group has been created successfully"));
 }));
-exports.viewUserGroups = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.viewGroups = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const group = yield group_model_1.Group.find({
         members: { $in: [(_a = req.user) === null || _a === void 0 ? void 0 : _a._id] }
     }).populate([
         {
             path: 'members',
-            select: 'username email',
+            select: 'username email avatar',
         },
         {
             path: 'owner',
-            select: 'username email'
+            select: 'username email avatar'
         }
     ]);
     return res.status(200).json(new ApiResponse_1.default(200, group, "Group details fetched successfully"));

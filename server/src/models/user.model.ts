@@ -8,6 +8,7 @@ export interface IUser extends Document {
     email: string,
     password: string,
     gender: string,
+    avatar: string,
     friends?: mongoose.Types.ObjectId[]
 
     generateAccessToken: () => string;
@@ -34,6 +35,10 @@ const userSchema = new mongoose.Schema<IUser>({
     password: {
         type: String,
         required: true,
+    },
+    avatar: {
+        type: String,
+        required: true
     },
     friends: [{
         type: mongoose.Schema.Types.ObjectId,

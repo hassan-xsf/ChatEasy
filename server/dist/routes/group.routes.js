@@ -12,6 +12,8 @@ router.route('/my')
     .post(group_controller_1.createGroup);
 router.route('/create')
     .post(group_controller_1.createGroup);
+router.route('/view/all')
+    .get(group_controller_1.viewGroups);
 router.route('/view/:groupId')
     .get(group_controller_1.viewGroup);
 exports.default = router;

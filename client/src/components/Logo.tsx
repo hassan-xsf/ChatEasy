@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { useTSSelector } from "../hooks/useTSSelector";
 
 interface LogoProps {
     size: "small" | "medium"
@@ -6,11 +8,11 @@ interface LogoProps {
 function Logo({ size }: LogoProps) {
 
     const sizeClass = size === "small" ? "text-md sm:text-xl" : "text-3xl sm:text-4xl";
-
+    const authStatus = useTSSelector(state => state.auth.authStatus)
     return <>
-        <div className={`flex items-center justify-center gap-2 w-full ${size !== `small` ? `flex-col` : `flex-row`} sm:flex-row`}>
+        <Link to = {authStatus ? "/chat" : "/"} className={`cursor-pointer flex items-center justify-center gap-2 w-full ${size !== `small` ? `flex-col` : `flex-row`} md:flex-row`}>
             <svg
-                className={`${size === "small" ? "size-10 md:size-12" : "size-16 sm:size-24"}`}
+                className={`${size === "small" ? "size-10 md:size-12" : "size-16 sm:size-20 lg:size-22"}`}
                 viewBox="0 0 24 24"
                 fill="black"
                 xmlns="http://www.w3.org/2000/svg"
@@ -21,11 +23,11 @@ function Logo({ size }: LogoProps) {
             </svg>
             <div className="flex flex-col justify-center">
                 <span className={`text-primary font-bold ${sizeClass}`}>
-                    EasyChat
+                    EasyChat <span className = "text-black text-xs italic font-light">v0.1</span>
                 </span>
                 <span className="text-secondary font-semibold text-xs italic hidden sm:block">Making the chatting easier</span>
             </div>
-        </div>
+        </Link>
     </>
 }
 

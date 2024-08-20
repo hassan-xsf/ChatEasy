@@ -61,4 +61,34 @@ const viewMessages = asyncHandler(async (req: CustomRequest, res: Response) => {
     );
 })
 
-export { createMessage, viewMessages };
+
+const saveMessage = async (groupId: string , from: string , msg: string) => {
+
+    const group = await Group.findById(groupId)
+    if (!group) {
+        return null;
+    }
+    const createdMessage = await Message.create({
+        groupId,
+        msg,
+        from: from,
+    })
+    if (!createdMessage) {
+        return null;
+    }
+}
+
+
+const viewChatHistory = async (groupId: string) => {
+    if (!groupId) {
+        return []
+    }
+    const messages = await Message.find({groupId})
+    if(!messages) {
+        return []  
+    }
+    else return messages;
+}
+
+
+export { createMessage, viewMessages , viewChatHistory , saveMessage };

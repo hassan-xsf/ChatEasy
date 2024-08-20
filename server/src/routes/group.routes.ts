@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGroup, viewGroup } from "../controllers/group.controller";
+import { createGroup, viewGroup , viewGroups} from "../controllers/group.controller";
 
 import verifyJWT from '../middlewares/auth.middleware'
 
@@ -18,6 +18,12 @@ router.route('/create')
     .post(
         createGroup,
     )
+
+router.route('/view/all')
+    .get(
+        viewGroups
+    )
+
 
 router.route('/view/:groupId')
     .get(

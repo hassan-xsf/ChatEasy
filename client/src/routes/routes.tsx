@@ -5,10 +5,10 @@ import ErrorPage from '../components/ErrorPage.tsx'
 const App = React.lazy(() => import('../App.tsx'));
 const Login = React.lazy(() => import('../components/Login.tsx'));
 const Register = React.lazy(() => import('../components/Register.tsx'));
-const DefaultMain = React.lazy(() => import('../components/DefaultMain.tsx'));
-const SearchMain = React.lazy(() => import('../components/SearchMain.tsx'));
+const DefaultMain = React.lazy(() => import('../components/Chat/DefaultMain.tsx'));
+const SearchMain = React.lazy(() => import('../components/Chat/SearchMain.tsx'));
 const MainChat = React.lazy(() => import('../components/Chat/MainChat.tsx'));
-const ChatIcon = React.lazy(() => import('../components/Chat/ChatIcon.tsx'));
+const SideChat = React.lazy(() => import('../components/Chat/SideChat.tsx'));
 
 
 const Fallback = () => {
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
                 path: '/chat',
                 element: (
                     <Suspense fallback={<Fallback />}>
-                        <ChatIcon />
+                        <SideChat />
                     </Suspense>
                 ),
                 children: [

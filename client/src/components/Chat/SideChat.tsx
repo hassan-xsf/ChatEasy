@@ -1,34 +1,44 @@
-import { Link, Outlet , useNavigate } from "react-router-dom"
-import { useEffect,useState , useRef } from "react"
+import { NavLink, Link, Outlet, useNavigate } from "react-router-dom"
+import { useEffect, useState, useRef } from "react"
 import { useQuery } from "@tanstack/react-query";
 import { viewGroups } from "../../api/group";
 import { useTSSelector } from "../../hooks/useTSSelector";
 
 
+import io from 'socket.io-client'
 
-function ChatIcons() {
+export const socket = io('http://localhost:8000', {
+    withCredentials: true,
+});
+
+
+function SideChat() {
 
     const navigate = useNavigate();
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [chatNames, setChatNames] = useState<Array<string>>([]);
+    const [chatAvatar, setchatAvatar] = useState<Array<string>>([]);
     const authData = useTSSelector(state => state.auth.authData)
     const { isLoading, data, error } = useQuery({
         queryKey: ['groups'],
         queryFn: viewGroups,
     });
 
-
     useEffect(() => {
-        if (data?.data?.data) {
+
+        if (data?.data?.data) { // This chooses the PFP and group name, Using simple formula (sort of just to make it work :x) but it gives pretty good advantages if someone goes for groups :)
             let names: Array<string> = [];
+            let avatars: Array<string> = [];
             data.data.data.forEach((e: any) => {
                 e.members.forEach((x: any) => {
                     if (authData?.username !== x.username) {
                         names.push(x.username);
+                        avatars.push(x.avatar)
                     }
                 });
             });
             setChatNames(names);
+            setchatAvatar(avatars)
         }
     }, [data, authData]);
 
@@ -37,21 +47,22 @@ function ChatIcons() {
     const gotoSearch = () => {
         if (inputRef.current && inputRef.current.value) {
             navigate(`/chat/search/${inputRef.current.value}`)
+            inputRef.current.value = "";
         }
     }
 
     return <>
-        <div className="bg-white ring flex-grow h-[calc(75vh-7vh)] w-[30%] shadow-lg overflow-y-auto relative scrollbar pr-0.5">
+        <div className="bg-white ring flex-grow h-[calc(98vh-8vh)] sm:h-[calc(80vh-8vh)] lg:h-[calc(75vh-7vh)] w-[30%] shadow-lg overflow-y-auto overflow-x-hidden relative scrollbar pr-0.5">
             <div className="sticky top-0 w-full h-[7vh] bg-white py-2">
-                <div className="flex items-center justify-center mx-auto pt-2 bg-white">
+                <div className="flex flex-col sm:flex-row items-center justify-center mx-auto pt-2 bg-white">
                     <div className="flex items-center bg-white rounded-lg w-[70%]">
-                        <svg className="size-5 text-gray-400 mb-0.5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <Link className="" to="/chat/"><svg className="size-5 text-primary mb-0.5 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fillRule="evenodd" clipRule="evenodd" fill="currentColor" d="M15.0549 3.25H8.94513C7.57754 3.24998 6.47521 3.24996 5.60825 3.36652C4.70814 3.48754 3.95027 3.74643 3.34835 4.34835C2.74643 4.95027 2.48754 5.70814 2.36652 6.60825C2.24996 7.47521 2.24998 8.57753 2.25 9.94511V12.0549C2.24998 13.4225 2.24996 14.5248 2.36652 15.3918C2.48754 16.2919 2.74643 17.0497 3.34835 17.6517C3.95027 18.2536 4.70814 18.5125 5.60825 18.6335C6.47521 18.75 7.57753 18.75 8.94511 18.75H15.0549C16.4225 18.75 17.5248 18.75 18.3918 18.6335C19.2919 18.5125 20.0497 18.2536 20.6517 17.6517C21.2536 17.0497 21.5125 16.2919 21.6335 15.3918C21.75 14.5248 21.75 13.4225 21.75 12.0549V9.94513C21.75 8.57754 21.75 7.47522 21.6335 6.60825C21.5125 5.70814 21.2536 4.95027 20.6517 4.34835C20.0497 3.74643 19.2919 3.48754 18.3918 3.36652C17.5248 3.24996 16.4225 3.24998 15.0549 3.25ZM6.33541 7.32918C5.96493 7.14394 5.51442 7.29411 5.32918 7.66459C5.14394 8.03507 5.29411 8.48558 5.66459 8.67082L10.7702 11.2236C11.5444 11.6107 12.4556 11.6107 13.2298 11.2236L18.3354 8.67082C18.7059 8.48558 18.8561 8.03507 18.6708 7.66459C18.4856 7.29411 18.0351 7.14394 17.6646 7.32918L12.559 9.88197C12.2071 10.0579 11.7929 10.0579 11.441 9.88197L6.33541 7.32918Z" />
                         </svg>
-                        <input ref={inputRef} className="py-2 px-2 bg-white text-sm border-none outline-none" type="text" placeholder="Search.." />
+                        </Link>
+                        <input ref={inputRef} className="py-2 px-2 bg-white text-xs border-none outline-none" type="text" placeholder="Search.." />
                     </div>
-                    <div className="flex items-center justify-center gap-2">
-
+                    <div className="flex items-center sm:justify-center gap-2">
                         <button onClick={gotoSearch}>
                             <svg className="hover:text-primary cursor-pointer size-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M15.8053 15.8013L21 21M10.5 7.5V13.5M7.5 10.5H13.5M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -65,11 +76,11 @@ function ChatIcons() {
                     </div>
                 </div>
             </div>
-            <div className="grid grid-rows-auto grid-cols-1 items-center overflow-hidden px-1 mt-4">
+            <div className="grid grid-rows-auto grid-cols-1 gap-1 items-center overflow-hidden px-1 mt-8 sm:mt-4">
                 {
                     isLoading ||
-                    data?.data.data.map((e : any , indx : number) => (
-                        <Chat chatName = {chatNames[indx]} data = {e} key = {indx}/>
+                    data?.data.data.map((e: any, indx: number) => (
+                        <Chat chatName={chatNames[indx] || indx.toString()} chatAvatar={chatAvatar[indx]} data={e} key={indx} />
                     ))
                 }
             </div>
@@ -80,26 +91,33 @@ function ChatIcons() {
 
 interface IChat {
     _id: string,
-    name: string
+    name: string,
+    avatar: string,
 }
 
-function Chat({ data , chatName }: { data: IChat , chatName: string}) {
+function Chat({ data, chatName, chatAvatar }: { data: IChat, chatName: string, chatAvatar: string }) {
     return <>
-        <Link to = {`/chat/group/${data._id}`} className="cursor-pointer bg-white hover:bg-gray-200 w-full h-[8vh] flex items-center justify-between px-3 py-1 gap-3">
-            <div className="flex gap-2">
-                <div className="size-12 rounded-full bg-white">
-                    <img className="object-fit size-full rounded-full" src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/corporate-user-icon.png" />
+        <NavLink
+            to={`/chat/group/${data._id}`}
+            className={({ isActive }) =>
+                `cursor-pointer hover:bg-primary w-full h-[8vh] flex items-center rounded-md justify-between sm:px-3 py-1 gap-3 ${isActive ? 'bg-primary' : 'bg-gray-100'
+                }`
+            }
+        >
+            <div className="flex sm:gap-2">
+                <div className="size-10 lg:size-12 rounded-full bg-white">
+                    <img className="object-fit size-full rounded-full" src={chatAvatar} />
                 </div>
-                <div className="font-sans flex flex-col tracking-tighter">
-                    <span className="text-md font-semibold text-primary">{chatName}</span>
-                    <span className="text-xs text-zinc-600 font-[450] tracking-tighter">Hey how you doing my man</span>
+                <div className="font-sans flex flex-col items-center justify-center tracking-tighter">
+                    <span className="text-xs lg:text-md font-semibold text-black">{chatName}</span>
+                    <span className="text-xs lg:text-sm text-zinc-600 font-[450] tracking-tighter"></span>
                 </div>
             </div>
-            <div className="bg-red-500 rounded-full font-sans text-xs size-4 text-white font-bold text-center">
+            {/* <div className="bg-red-500 rounded-full font-sans text-[10px] lg:text-xs size-4 text-white font-bold text-center">
                 6
-            </div>
-        </Link>
+            </div> // todo if there's messages?*/}
+        </NavLink>
     </>
 }
 
-export default ChatIcons
+export default SideChat

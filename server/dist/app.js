@@ -20,3 +20,4 @@ const message_routes_1 = __importDefault(require("./routes/message.routes"));
 app.use('/api/v1/message', message_routes_1.default);
 const server = (0, http_1.createServer)(app);
 exports.server = server;
+require("./socket");

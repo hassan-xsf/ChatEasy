@@ -1,25 +1,30 @@
-import {Server} from "socket.io"
-import {server} from "./app"
+import { Server } from "socket.io"
+import { server } from "./app"
+import { viewChatHistory , saveMessage} from "./controllers/message.controller"
 
-
-const io = new Server(server , {
+const io = new Server(server, {
     cors: {
-        origin: "*"
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials: true
     }
 })
-io.on('connection' , (socket) => {
-    console.log(socket.id)
-    socket.on('joinRoom' , (room) => {
-        socket.join(room)
-        io.to(room).emit('msgRoom' , `UserID: ${socket.id} has joined the room`)
-    }) 
-    socket.on('disconnect' , () => {
-        socket.rooms.forEach((room) => {
-            if(room !== socket.id)  // The client itself, In socket basiccally whenever a client joins it sets it's room equal to it's ID.
-                io.to(room).emit('msgRoom' , `UserID: ${socket.id} has left the room`)
-        })
+
+
+io.on('connection', (socket) => {
+
+    socket.on('joinGroup', async({ groupId }: { groupId: string }) => {
+        socket.join(groupId)
+        await viewChatHistory(groupId)
     })
-    socket.on('msgRoom' , ({room , msg}) => {
-        io.to(room).emit('msgRoom' , msg)
+
+    socket.on('sendMessage' , ({ groupId , msg , from}: { groupId: string  , msg: string , from: string}) => {
+        saveMessage(groupId, from , msg)
+        io.to(groupId).emit('recieveMessage' , {msg , from})
     })
+
+    socket.on('leaveGroup', ({ groupId}: { groupId: string}) => {
+        socket.leave(groupId)
+    })
+
 })

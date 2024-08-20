@@ -30,3 +30,5 @@ const server = createServer(app)
 export {
     server
 }
+
+import './socket'

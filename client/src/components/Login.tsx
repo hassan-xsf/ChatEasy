@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 import { login } from '../store/authSlice'
+import { toast } from 'sonner';
 
 function Login() {
 
@@ -22,6 +23,7 @@ function Login() {
         mutationFn: (data: { email: string; password: string }) => loginUser(data),
         onSuccess: (res) => {
             console.log('Login successful:', res.data.data.user);
+            toast.success(`Welcome back, ${res.data.data.user.username}` , {duration: 4000})
             dispatch(login(res.data.data.user))
             navigate("/chat")
         },
