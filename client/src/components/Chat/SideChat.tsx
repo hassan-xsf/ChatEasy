@@ -100,7 +100,7 @@ function Chat({ data, chatName, chatAvatar }: { data: IChat, chatName: string, c
         <NavLink
             to={`/chat/group/${data._id}`}
             className={({ isActive }) =>
-                `cursor-pointer hover:bg-primary w-full h-[8vh] flex items-center rounded-md justify-between sm:px-3 py-1 gap-3 ${isActive ? 'bg-primary' : 'bg-gray-100'
+                `cursor-pointer hover:bg-primary w-full h-[8vh] flex items-center rounded-md justify-between sm:px-3 py-1 gap-3 ${isActive ? 'bg-primary' : 'bg-white'
                 }`
             }
         >
