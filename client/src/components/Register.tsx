@@ -115,7 +115,7 @@ function Register() {
                         Female
                     </label>
                 </div>
-                <Link to="/" className="text-xs mb-4 w-1/3 mx-auto">Already have an account?</Link>
+                <Link to="/" className="text-xs mb-4 sm:w-1/3 mx-auto text-nowrap">Already have an account?</Link>
                 <button className="text-md w-[10%] mx-auto rounded-3xl mb-4 p-2 text-white font-semibold bg-primary">Sign Up</button>
             </form>
 

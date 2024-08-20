@@ -92,7 +92,7 @@ const router = createBrowserRouter([
                                 <MainChat />
                             </Suspense>
                         ),
-                    }
+                    },
                 ]
             }
         ]

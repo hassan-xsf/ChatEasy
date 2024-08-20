@@ -60,8 +60,8 @@ function Login() {
                     {errors.email && <span className="text-xs text-red-500 w-1/3 mx-auto">{errors.email.message as string}</span>}
                     <InputBox label="Password" type="password" name="password" required={true} register={register} />
                 </div>
-                <Link to="/register" className="text-xs mb-4 w-1/3 mx-auto">Don't have an account?</Link>
-                <button className="text-md w-[10%] mx-auto rounded-3xl mb-4 p-2 text-white font-semibold bg-primary">Sign In</button>
+                <Link to="/register" className="text-xs mb-4 sm:w-1/3 mx-auto text-nowrap">Don't have an account?</Link>
+                <button className="text-xs sm:text-sm md:text-md w-[18%] md:w-[15%] lg:w-[10%] mx-auto rounded-3xl mb-4 p-2 text-white font-semibold bg-primary text-nowrap">Sign In</button>
             </form>
 
         </div>

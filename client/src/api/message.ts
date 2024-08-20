@@ -2,12 +2,12 @@ import axios from "axios";
 
 
 
-const sendMessage = ({ msg, groupId }: { msg: string, groupId: string }) => {
-    return axios.post(`api/v1/message/${msg}/${groupId}`)
+const sendMessage = async({ msg, groupId }: { msg: string, groupId: string }) => {
+    return await axios.post(`/api/v1/message/send/${msg}/${groupId}`)
 }
 
-const viewMessages = () => {
-    return axios.get('api/v1/message/all')
+const viewMessages = (groupId: string) => {
+    return axios.get(`/api/v1/message/all/${groupId}`)
 }
 
 export {

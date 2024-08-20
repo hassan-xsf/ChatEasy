@@ -5,12 +5,12 @@ interface LogoProps {
 
 function Logo({ size }: LogoProps) {
 
-    const sizeClass = size === "small" ? "text-xl" : "text-4xl";
+    const sizeClass = size === "small" ? "text-md sm:text-xl" : "text-3xl sm:text-4xl";
 
     return <>
-        <div className="flex items-center justify-center gap-2 w-full">
+        <div className={`flex items-center justify-center gap-2 w-full ${size !== `small` ? `flex-col` : `flex-row`} sm:flex-row`}>
             <svg
-                className={`${size === "small" ? "size-12" : "size-24"}`}
+                className={`${size === "small" ? "size-10 md:size-12" : "size-16 sm:size-24"}`}
                 viewBox="0 0 24 24"
                 fill="black"
                 xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ function Logo({ size }: LogoProps) {
                 <span className={`text-primary font-bold ${sizeClass}`}>
                     EasyChat
                 </span>
-                <span className="text-secondary font-semibold text-xs italic">Making the chatting easier</span>
+                <span className="text-secondary font-semibold text-xs italic hidden sm:block">Making the chatting easier</span>
             </div>
         </div>
     </>

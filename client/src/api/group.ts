@@ -10,11 +10,14 @@ const createGroup = async({ name, members }: { name: string , members: Array<str
 }
 
 const viewGroup = (groupId : string) => {
-    return axios.get(`api/v1/group/view/${groupId}`)
+    return axios.get(`/api/v1/group/view/${groupId}`)
+}
+const viewGroups = () => {
+    return axios.get(`/api/v1/group/view/all`)
 }
 
 export {
     createGroup,
-    viewGroup
-
+    viewGroup,
+    viewGroups
 }

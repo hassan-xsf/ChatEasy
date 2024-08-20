@@ -25,7 +25,6 @@ function AuthLayout({ children }: AuthLayoutProps) {
         enabled: !authStatus,
     })
     useEffect(() => {
-        console.log("YES")
         if (!authStatus) {
             dispatch(logout())
         }

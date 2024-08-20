@@ -12,7 +12,7 @@ interface InputBoxProps {
 function InputBox({ label, type, name , required = false , register} : InputBoxProps) {
     return (
         <>
-            <div className="relative w-1/3">
+            <div className="relative w-2/3 sm:w-1/3">
                 <input
                     type={type}
                     {...register(name , 
