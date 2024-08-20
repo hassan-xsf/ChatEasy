@@ -1,13 +1,7 @@
-![Logo](https://res.cloudinary.com/drirwwvdw/image/upload/v1724098085/rtfjezyofnjjmsnppfeh.png)
+![Logo](https://res-console.cloudinary.com/drirwwvdw/media_explorer_thumbnails/8e68c847e5b7f2168d072b346286bd6b/detailed)
 
 # EasyChat v0.1 🎉
-
-## Prerequisites 🛠️
-
-- **Node.js**
-- **React**
-- **MongoDB**
-- **Typescript**
+### Made using MERN stack.
 
 # INTRODUCTION 🙌
 This project was just made to practice typescript, This is my first ever project using typescript after I literally crash learned it in 2 days.
