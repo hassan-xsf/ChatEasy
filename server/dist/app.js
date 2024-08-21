@@ -11,6 +11,9 @@ const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.get('/pulse', (req, res) => {
+    res.send('Server is working');
+});
 /* ROUTES */
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 app.use('/api/v1/users', user_routes_1.default);
