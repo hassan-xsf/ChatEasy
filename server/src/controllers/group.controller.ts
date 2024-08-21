@@ -3,6 +3,7 @@ import { asyncHandler } from "../utilities/asyncHandler";
 import { Group } from "../models/group.model";
 import ApiResponse from "../utilities/ApiResponse";
 import { CustomRequest } from '../types/request';
+import mongoose from 'mongoose';
 
 export const createGroup = asyncHandler(async (req: CustomRequest, res: Response) => {
     const { name, members } = req.body;
@@ -14,13 +15,13 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
 
     const existingGroup = await Group.findOne({
         members: { $all: members }
-      });
-    
-      if (existingGroup) {
+    });
+
+    if (existingGroup) {
         return res.status(200).json(
-          new ApiResponse(200, existingGroup , "Group already existed!")
+            new ApiResponse(200, existingGroup, "Group already existed!")
         );
-      }
+    }
 
     const owner = req.user?._id;
 
@@ -42,16 +43,52 @@ export const createGroup = asyncHandler(async (req: CustomRequest, res: Response
 });
 
 export const viewGroups = asyncHandler(async (req: CustomRequest, res: Response) => {
-    const group = await Group.find({
-        members: { $in: [req.user?._id] }
-    }).populate([
+    const group = await Group.aggregate([
         {
-            path: 'members',
-            select: 'username email avatar',
+            $match: {
+                members: {
+                    $in: [new mongoose.Types.ObjectId(req.user?._id)]
+                }
+            }
         },
         {
-            path: 'owner',
-            select: 'username email avatar'
+            $lookup: {
+                from: 'users',
+                localField: 'members',
+                foreignField: '_id',
+                as: 'members'
+            }
+        },
+        {
+            $lookup: {
+                from: 'messages',
+                localField: '_id',
+                foreignField: 'groupId',
+                as: 'messages'
+            }
+        },
+        {
+            $addFields: {
+                lastMessage: { $arrayElemAt: ['$messages', -1] }
+            }
+        },
+        {
+            $sort: {
+                'lastMessage.createdAt': -1
+            }
+        },
+        {
+            $project: {
+                members: {
+                    username: 1,
+                    email: 1,
+                    avatar: 1
+                },
+                lastMessage: {
+                    msg: 1,
+                    createdAt: 1
+                }
+            }
         }
     ]);
 

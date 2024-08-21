@@ -25,9 +25,12 @@ io.on('connection', (socket) => {
         const data = yield (0, message_controller_1.viewChatHistory)(groupId);
         socket.emit('loadChats', data);
     }));
-    socket.on('sendMessage', ({ groupId, msg, from }) => {
+    socket.on('sendMessage', ({ groupId, msg, from, name }) => {
         (0, message_controller_1.saveMessage)(groupId, from, msg);
         io.to(groupId).emit('recieveMessage', { msg, from });
+    });
+    socket.on('notifyUser', ({ groupId, from, toName }) => {
+        io.emit('updateSideChat', { groupId, from, toName });
     });
     socket.on('leaveGroup', ({ groupId }) => {
         socket.leave(groupId);

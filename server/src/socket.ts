@@ -20,9 +20,12 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('sendMessage' , ({ groupId , msg , from}: { groupId: string  , msg: string , from: string}) => {
+    socket.on('sendMessage' , ({ groupId , msg , from , name}: { groupId: string  , msg: string , from: string , name:string}) => {
         saveMessage(groupId, from , msg)
         io.to(groupId).emit('recieveMessage' , {msg , from})
+    })
+    socket.on('notifyUser' , ({groupId , from , toName} : {groupId: string , from: string , toName: string}) => {
+        io.emit('updateSideChat' , {groupId , from , toName})
     })
 
     socket.on('leaveGroup', ({ groupId}: { groupId: string}) => {

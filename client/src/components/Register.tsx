@@ -1,5 +1,5 @@
 import { useForm, Controller, FieldValues } from 'react-hook-form'
-import InputBox from './InputBox'
+import InputBox from './Inputbox'
 import Logo from './Logo'
 import { loginUser, registerUser , uploadPfp} from '../api/auth'
 import { useMutation } from '@tanstack/react-query'

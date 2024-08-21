@@ -16,6 +16,7 @@ exports.viewGroup = exports.viewGroups = exports.createGroup = void 0;
 const asyncHandler_1 = require("../utilities/asyncHandler");
 const group_model_1 = require("../models/group.model");
 const ApiResponse_1 = __importDefault(require("../utilities/ApiResponse"));
+const mongoose_1 = __importDefault(require("mongoose"));
 exports.createGroup = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { name, members } = req.body;
@@ -41,16 +42,52 @@ exports.createGroup = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(v
 }));
 exports.viewGroups = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const group = yield group_model_1.Group.find({
-        members: { $in: [(_a = req.user) === null || _a === void 0 ? void 0 : _a._id] }
-    }).populate([
+    const group = yield group_model_1.Group.aggregate([
         {
-            path: 'members',
-            select: 'username email avatar',
+            $match: {
+                members: {
+                    $in: [new mongoose_1.default.Types.ObjectId((_a = req.user) === null || _a === void 0 ? void 0 : _a._id)]
+                }
+            }
         },
         {
-            path: 'owner',
-            select: 'username email avatar'
+            $lookup: {
+                from: 'users',
+                localField: 'members',
+                foreignField: '_id',
+                as: 'members'
+            }
+        },
+        {
+            $lookup: {
+                from: 'messages',
+                localField: '_id',
+                foreignField: 'groupId',
+                as: 'messages'
+            }
+        },
+        {
+            $addFields: {
+                lastMessage: { $arrayElemAt: ['$messages', -1] }
+            }
+        },
+        {
+            $sort: {
+                'lastMessage.createdAt': -1
+            }
+        },
+        {
+            $project: {
+                members: {
+                    username: 1,
+                    email: 1,
+                    avatar: 1
+                },
+                lastMessage: {
+                    msg: 1,
+                    createdAt: 1
+                }
+            }
         }
     ]);
     return res.status(200).json(new ApiResponse_1.default(200, group, "Group details fetched successfully"));

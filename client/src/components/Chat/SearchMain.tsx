@@ -6,7 +6,7 @@ import { toggleFriend, viewFriends } from '../../api/friend';
 import { createGroup } from '../../api/group';
 import { AxiosError } from 'axios';
 import { useTSSelector } from '../../hooks/useTSSelector';
-import {toast} from 'sonner'
+import { toast } from 'sonner'
 
 function SearchMain({ type = "search" }) {
   const { search } = useParams();
@@ -16,7 +16,6 @@ function SearchMain({ type = "search" }) {
     enabled: !!search && type === "search",
   });
   if (error) console.log(error)
-  console.log(data?.data.data.users)
 
   const { isLoading: isLoadingFriends, data: friendsData, error: friendsError } = useQuery({
     queryKey: ['friends'],
@@ -30,32 +29,50 @@ function SearchMain({ type = "search" }) {
   return <>
     <div className="bg-white w-[80%] h-[calc(75vh-7vh)] relative">
       {
-        !(type === 'search' && isLoading) && !(type === 'friends' && isLoadingFriends) &&
-        <div className="flex flex-col items-center h-full">
-          <Logo size="medium" />
-          {
-
-            type == "search" ?
-              <>
-                <span className="text-sm self-start w-3/4 mx-auto font-light">Searched for: {search}</span>
-                <span className="text-xs self-start w-3/4 mx-auto font-light">{data?.data.data.count || '0'} Total results found</span>
-              </>
-              :
-              <span className="text-sm self-start w-3/4 mx-auto font-light">My Friends:</span>
-          }
-          <div className="rounded-md w-3/4 h-3/4 mt-2 grid grid-cols-2 grid-flow-col gap-2 grid-rows-5 md:grid-rows-7 p-1">
+        !(type === 'search' && isLoading) && !(type === 'friends' && isLoadingFriends) ?
+          <div className="flex flex-col items-center h-full">
+            <Logo size="medium" />
             {
+
               type == "search" ?
-                data && data?.data.data.users.map((data: any, indx: number) => (
-                  <SearchBox data={data} key={indx} count={indx + 1} search={type} />
-                ))
+                <>
+                  <span className="text-sm self-start w-3/4 mx-auto font-light">Searched for: {search}</span>
+                  <span className="text-xs self-start w-3/4 mx-auto font-light">{data?.data.data.count || '0'} Total results found</span>
+                </>
                 :
-                friendsData && friendsData?.data.data.friends.map((data: any, indx: number) => (
-                  <SearchBox data={data} key={indx} count={indx + 1} search={type} />
-                ))
+                <span className="text-sm self-start w-3/4 mx-auto font-light">My Friends:</span>
             }
+            <div className="rounded-md w-3/4 h-3/4 mt-2 grid grid-cols-2 grid-flow-col gap-2 grid-rows-5 md:grid-rows-7 p-1">
+              {
+                type == "search" ?
+                  data && data?.data.data.users.map((data: any, indx: number) => (
+                    <SearchBox data={data} key={indx} count={indx + 1} search={type} />
+                  ))
+                  :
+                  friendsData && friendsData?.data.data.friends.map((data: any, indx: number) => (
+                    <SearchBox data={data} key={indx} count={indx + 1} search={type} />
+                  ))
+              }
+            </div>
           </div>
-        </div>
+          :
+          <>
+            <Logo size="medium" />
+            <div className="flex flex-col items-center h-full animate-pulse">
+
+              <span className="text-sm self-start w-[20%] ml-20 font-light h-6 mt-4 bg-gray-300 rounded-md"></span>
+
+              <div className="rounded-md w-3/4 h-3/4 mt-2 grid grid-cols-2 grid-flow-col gap-2 grid-rows-5 md:grid-rows-7 p-1">
+
+                <div className="bg-gray-300 animate-pulse rounded-md"></div>
+                <div className="bg-gray-300 animate-pulse rounded-md"></div>
+                <div className="bg-gray-300 animate-pulse rounded-md"></div>
+                <div className="bg-gray-300 animate-pulse rounded-md"></div>
+
+
+              </div>
+            </div>
+          </>
       }
     </div>
 
@@ -77,22 +94,23 @@ function SearchBox({ data, count, search }: { data: ISearchbox, count: number, s
   const handleFriendButton = async (id: string, isFriend: boolean, username: string) => {
     try {
       if (!authData) return;
-      if (authData._id == id) return toast.error(`You can't add yourself as a friend` , {duration: 2000})
+      if (authData._id == id) return toast.error(`You can't add yourself as a friend`, { duration: 2000 })
       await toggleFriend(id)
       query.invalidateQueries({ queryKey: ['groups'] })
-      if(!isFriend) toast.success(`${username} is now your friend now!` , {duration: 2000})
-      else toast.info(`${username} is no longer your friend!` , {duration: 2000})
-      if (!isFriend) { //todo
+      if (!isFriend) toast.success(`${username} is now your friend now!`, { duration: 2000 })
+      else toast.info(`${username} is no longer your friend!`, { duration: 2000 })
+      if (!isFriend) {
+        query.invalidateQueries({ queryKey: ['groups'] })
         await createGroup({ name: username, members: [authData._id as string, id] })
           .catch((e) => console.log(e))
       }
-      console.log(search)
       if (search === 'search') {
         query.invalidateQueries({ queryKey: ['search'] })
       }
       else {
         query.invalidateQueries({ queryKey: ['friends'] })
       }
+
 
     }
     catch (error) {
