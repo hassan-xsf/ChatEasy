@@ -4,9 +4,9 @@
 #### Made using MERN stack.
 
 ### Things I learned in this project:
-#### How to use typescript in backend and frontend.
-#### Implementing real-time message notifications (Web Sockets using Socket.IO)
-#### Handling complex APIs, aggregation pipelines etc.
+How to use typescript in backend and frontend.
+Implementing real-time message notifications (Web Sockets using Socket.IO)
+Handling complex APIs, aggregation pipelines etc.
 
 
 # INTRODUCTION 🙌
