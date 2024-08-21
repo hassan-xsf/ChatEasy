@@ -9,6 +9,10 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
+app.get('/pulse' , (req, res) => {
+    res.send('Server is working')
+})
+
 /* ROUTES */
 import userRouter from './routes/user.routes'
 
