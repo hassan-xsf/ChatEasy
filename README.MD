@@ -1,5 +1,7 @@
-![Logo](https://res.cloudinary.com/drirwwvdw/image/upload/v1724184580/r23gnucxtxsggrm2qbvq.png)
 
+<p align="center">
+  <img src = "https://res.cloudinary.com/drirwwvdw/image/upload/v1724184580/r23gnucxtxsggrm2qbvq.png" alt = "ChatEasy"/>
+</p>
 # EasyChat v0.1 🎉
 #### Made using MERN stack.
 
