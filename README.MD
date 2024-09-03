@@ -6,6 +6,9 @@
 # EasyChat v0.1 🎉
 #### Made using MERN stack.
 
+### Preview:
+https://github.com/user-attachments/assets/e0943118-8f40-44a7-af64-fa68c3a24377
+
 ### Things I learned in this project:
 1. How to use typescript in backend and frontend.
 2. Implementing real-time message notifications (Web Sockets using Socket.IO)
