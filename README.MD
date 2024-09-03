@@ -7,7 +7,7 @@
 #### Made using MERN stack.
 
 ### Preview:
-https://github.com/user-attachments/assets/e0943118-8f40-44a7-af64-fa68c3a24377
+https://github.com/user-attachments/assets/142c899d-4773-413f-a417-78714c4ae66b
 
 ### Things I learned in this project:
 1. How to use typescript in backend and frontend.
